@@ -6,6 +6,7 @@
 #include<iostream>
 #include<assert.h>
 #define SEQLIST_INIT_SIZE 8
+#define INC_SIZE 3    //增量空间大小
 using namespace std;
 
 typedef int ElemType;
@@ -26,9 +27,9 @@ void InitSeqList(SeqList *list)
 
 void push_back(SeqList *list,ElemType x)//尾部插入
 {
-    if(list->size>=list->capacity)
+    if(list->size>=list->capacity && !Inc(list))
     {
-        printf("SeqList has no space,can't insert.\n");
+        printf("SeqList has no space, %d can't insert.\n",x);
         return;
     }
     list->base[list->size]=x;
@@ -37,9 +38,9 @@ void push_back(SeqList *list,ElemType x)//尾部插入
 
 void push_front(SeqList *list,ElemType x)//头插法
 {
-    if(list->size>=list->capacity)
+    if(list->size>=list->capacity && !Inc(list))
     {
-        printf("SeqList has no space,can't insert.\n");
+        printf("SeqList has no space, %d can't insert.\n",x);
         return;
     }
 
@@ -91,6 +92,12 @@ void insert_pos(SeqList *list,int pos,ElemType x)
     if(pos<0||pos>list->size)
     {
         printf("Insert position is ilegal!\n");
+        return;
+    }
+
+    if(list->size>=list->capacity && !Inc(list))
+    {
+        printf("SeqList has no space, %d can't insert by position.\n",x);
         return;
     }
    
@@ -191,6 +198,19 @@ void destroy(SeqList *list)
     list->size=0;
 }
 
+bool Inc(SeqList *list)//对顺序表实现空间增量
+{
+    ElemType *newbase=(ElemType*)realloc(list->base,sizeof(ElemType)*(list->capacity+INC_SIZE));
+    if(newbase==NULL)
+    {
+        printf("Add space failed.No more memory.\n");
+        return false;
+    }
+    list->base=newbase;
+    list->capacity+=INC_SIZE;
+    return true;
+}
+
 
 int main()
 {
@@ -212,7 +232,7 @@ int main()
         printf("* [13] clear              [14] destroy    *\n");
         printf("* [0] quit_system                         *\n");
         printf("*******************************************\n");
-        printf("Chose a item you want\n");
+        printf("Choose a item you want\n");
         scanf("%d",&select);
         if(select == 0)
             break;
