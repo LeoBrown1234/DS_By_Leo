@@ -21,6 +21,59 @@ typedef struct List
     size_t size;
 }List;
 
+//添加的代码：begin
+typedef Node* It;//设计了一个迭代器
+
+It begin(List *list)
+{
+    return list->first->next;
+}
+
+It end(List *list)
+{
+    return list->last->next;//return NULL;
+}
+
+void insert(List *list,It pos,ElemType x)
+{
+    Node *p=list->first;
+    while(p->next!=pos)
+    {
+        p=p->next;
+    }
+    Node *s=_buynode(x);
+    s->next=p->next;
+    p->next=s;
+    if(pos==NULL)
+        list->last=s;
+    list->size++;
+}
+
+Node* _buynode(ElemType x)
+{
+    Node *s=(Node *)malloc(sizeof(Node));
+    assert(s!=NULL);
+    s->data=x;
+    s->next=NULL;
+    return s;
+}
+/*
+由此重写的代码：
+void push_back(List *list,ElemType x)
+{
+    insert(list,end(list),x);
+}
+
+void push_front(List *list,ElemType x)
+{
+    insert(list,begin(list),x);
+}
+
+*/
+
+
+//添加的代码：end
+
 void InitList(List *list)
 {
     list->first=list->last=(Node *)malloc(sizeof(Node));
@@ -31,10 +84,10 @@ void InitList(List *list)
 
 void push_back(List*list,ElemType x)
 {
-    Node *s=(Node *)malloc(sizeof(Node));
+    Node *s=(Node *)malloc(sizeof(Node));//Node *s=_bugnode(x);
     assert(s!=NULL);
     s->data=x;
-    s->next=NULL;
+    s->next=NULL;//
 
     list->last->next=s;
     list->last=s;
@@ -43,7 +96,7 @@ void push_back(List*list,ElemType x)
 
 void push_front(List *list,ElemType x)
 {
-    Node *s=(Node *)malloc(sizeof(Node));
+    Node *s=(Node *)malloc(sizeof(Node));//Node *s=_buynode(x);
     assert(s!=NULL);
     s->data=x;
     
