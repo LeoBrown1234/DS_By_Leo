@@ -34,6 +34,15 @@ It end(List *list)
     return list->last->next;//return NULL;
 }
 
+Node* _buynode(ElemType x)
+{
+    Node *s=(Node *)malloc(sizeof(Node));
+    assert(s!=NULL);
+    s->data=x;
+    s->next=NULL;
+    return s;
+}
+
 void insert(List *list,It pos,ElemType x)
 {
     Node *p=list->first;
@@ -49,14 +58,6 @@ void insert(List *list,It pos,ElemType x)
     list->size++;
 }
 
-Node* _buynode(ElemType x)
-{
-    Node *s=(Node *)malloc(sizeof(Node));
-    assert(s!=NULL);
-    s->data=x;
-    s->next=NULL;
-    return s;
-}
 /*
 由此重写的代码：
 void push_back(List *list,ElemType x)
@@ -151,7 +152,7 @@ void pop_front(List *list)
     list->size--;
 }
 
-int insert_val(List *list,ElemType x)//按值插入（从小到大/从大到小）
+void insert_val(List *list,ElemType x)//按值插入（从小到大/从大到小）
 {
     Node *s=(Node *)malloc(sizeof(Node));
     assert(s!=NULL);
@@ -346,6 +347,7 @@ int main()
                 {
                     printf("The data you find is absent.\n");
                 }
+                break;
             case 8:
                 printf("The LinkList length is:%d \n",length(&mylist));
                 break;
