@@ -44,37 +44,30 @@ void InitDCList(List *list)
 void push_back(List *list, ElemType x)
 {
     Node *s = _buynode(x);
-    s->prio = list->last;
-    list->last->next = s;
-    list->last = s;
+    s->next = list->last->next;
+    s->next->prio=s;
+    s->prio=list->last;
+    list->last->next=s;
+    list->last=s;
     list->size++;
 }
 
-void push_front(List *list, ElemType x) // 头插，先连接再断开
+void push_front(List *list, ElemType x)
 {
     Node *s = _buynode(x);
-    if (list->first == list->last)
-    {
-        // s->prio=list->first;
-        // list->first->next=s;
-        list->last = s;
-    }
-    else
-    {
-        s->next = list->first->next;
-        s->next->prio = s;
-        // s->prio=list->first;
-        // list->first->next=s;
-    }
+    s->next = list->first->next;
+    s->next->prio = s;
     s->prio = list->first;
     list->first->next = s;
+    if(list->first==list->last)
+        list->last=s;
     list->size++;
 }
 
 void show_list(List *list)
 {
     Node *p = list->first->next;
-    while (p != NULL)
+    while (p != list->first)
     {
         printf("%d-->", p->data);
         p = p->next;
@@ -87,14 +80,11 @@ void pop_back(List *list)
     if (list->size == 0)
         return;
 
-    Node *p = list->first;
-    while (p->next != list->last)
-    {
-        p = p->next;
-    }
-    free(list->last);
-    list->last = p;
-    list->last->next = NULL;
+    Node *p = list->last;
+    list->last=list->last->prio;
+    p->next->prio=p->prio;
+    p->prio->next=p->next;
+    free(p);
     list->size--;
 }
 
@@ -103,28 +93,24 @@ void pop_front(List *list)
     if (list->size == 0)
         return;
     Node *p = list->first->next;
-    if (list->first->next == list->last)
+    p->next->prio=p->prio;
+    p->prio->next=p->next;
+    if(list->size==1)
     {
-        list->last = list->first;
-        list->last->next = NULL;
+        list->last=list->first;
     }
-    else
-    {
-        p->next->prio = list->first;
-        list->first->next = p->next;
-    }
-    free(p);
     list->size--;
+
 }
 
 void insert_val(List *list, ElemType x)
 {
     Node *p = list->first;
-    while (p->next != NULL && p->next->data < x)
+    while (p->next != list->last && p->next->data < x)
     {
         p = p->next;
     }
-    if (p->next == NULL)
+    if (p->next == list->last && p->next->data < x)
     {
         push_back(list, x);
     }
@@ -142,12 +128,15 @@ void insert_val(List *list, ElemType x)
 Node *find(List *list, ElemType key)
 {
     Node *p = list->first->next;
-    while (p != NULL && p->data != key)
+    while (p != list->first && p->data != key)
     {
         p = p->next;
     }
+    if(p==list->first)
+        return NULL;
     return p;
 }
+
 int length(List *list)
 {
     return list->size;
@@ -165,16 +154,16 @@ void delete_val(List *list, ElemType key)
     }
     if (p == list->last)
     {
-        list->last = p->prio;
-        list->last->next = NULL;
+        pop_back(list);
     }
     else
     {
         p->next->prio = p->prio;
         p->prio->next = p->next;
+        free(p);
+        list->size--;
     }
-    free(p);
-    list->size--;
+
 }
 
 void sort(List *list)
@@ -184,8 +173,11 @@ void sort(List *list)
     Node *s = list->first->next;
     Node *q = s->next;
 
-    list->last = s;
     list->last->next = NULL;
+    list->last = s;
+
+    list->last->next=list->first;
+    list->first->prio=list->last;
 
     while (q != NULL)
     {
@@ -193,16 +185,17 @@ void sort(List *list)
         q = q->next;
 
         Node *p = list->first;
-        while (p->next != NULL && p->next->data < s->data)
+        while (p->next != list->last && p->next->data < s->data)
         {
             p = p->next;
         }
-        if (p->next == NULL)
+        if (p->next == list->last && p->next->data < s->data)
         {
-            s->next = NULL;
-            s->prio = list->last;
-            list->last->next = s;
-            list->last = s;
+            s->next=list->last->next;
+            s->next->prio=s;
+            s->prio=list->last;
+            list->last->next=s;
+            list->last=s;
         }
         else
         {
@@ -220,8 +213,12 @@ void reverse(List *list)
         return;
     Node *p = list->first->next;
     Node *q = p->next;
-    list->last = p;
+
     list->last->next = NULL;
+    list->last = p;
+    list->last->next=list->first;
+    list->first->prio=list->last;
+
     while (q != NULL)
     {
         p = q;
@@ -239,21 +236,14 @@ void clear(List *list)
         return;
     Node *p = list->first->next;
 
-    while (p != NULL)
+    while (p != list->first)
     {
-        if (p == list->last)
-        {
-            list->last = list->first;
-            list->last->next = NULL;
-        }
-        else
-        {
-            p->next->prio = list->first;
-            list->first->next = p->next;
-        }
+        p->next->prio=list->first;
+        list->first->next=p->next;
         free(p);
         p=list->first->next;
     }
+    list->last=list->first;
     list->size = 0;
 }
 
