@@ -8,6 +8,7 @@ using namespace std;
 
 #define ElemType int
 #define STACK_INIT_SIZE 8
+#define STACK_INC_SIZE  3
 
 typedef struct SeqStack
 {
@@ -16,6 +17,18 @@ typedef struct SeqStack
     int top;
 }SeqStack;
 
+bool Inc(SeqStack *s)
+{
+    ElemType *newbase=(ElemType *)realloc(s->base,sizeof(ElemType)*(s->capacity+STACK_INC_SIZE));
+    if(newbase==NULL)
+    {
+        printf("Sorry our memory is empty! We can't getting more space.\n");
+        return false;
+    }
+    s->base=newbase;
+    s->capacity+=STACK_INC_SIZE;
+    return true;
+}
 
 void InitStack(SeqStack *s)
 {
@@ -37,7 +50,7 @@ bool IsEmpty(SeqStack *s)
 
 void Push(SeqStack *s,ElemType x)
 {
-    if(IsFull(s))
+    if(IsFull(s) && !Inc(s))//空间满了就尝试增加栈空间，增加失败证明没空间了，就失败了
     {
         printf("Stack space is full,  %d can't push.\n",x);
         return;
@@ -98,11 +111,11 @@ int main()
 
     ElemType v;
 
-    for(int i=1;i<=5;++i)
+    for(int i=1;i<=10;++i)
     {
         Push(&st,i);
     }
-    
+
     Show(&st);
     GetTop(&st,&v);
     printf("pop v = %d .\n",v);
