@@ -132,15 +132,49 @@ void SubString(SString S,SString sub,int pos,int len)
     sub[len]='\0';
 }
 
-// void StrIndex(SString S,SString T,SString pos)  //后续文件给出两个函数代码
-// {
+int StrIndex(SString S,SString T,int pos)  //后续文件给出两个函数代码
+{
+	int i = pos;
+	int j = 0;
+	while(S[i]!='\0' && T[j]!='\0')
+	{
+		if(S[i] == T[j])
+		{
+			i++;
+			j++;
+		}
+		else
+		{
+			i = i-j+1;
+			j = 0;
+		}
+	}
+	if(T[j] == '\0')
+		return i-j;
+	return -1;
+}
 
-// }
+void StrReplace(SString S,SString T,SString V)
+{
+	int s_len = StrLength(S);
+	int t_len = StrLength(T);
+	int v_len = StrLength(V);
 
-// void StrReplace(SString S,SString T,SString V)
-// {
+	int index = -1;
+	int pos = 0;
+	
+	while(pos < s_len)
+	{
+		index = StrIndex(S,T,pos);
+		if(index == -1)
+			return;
+		StrDelete(S,index,t_len);
+		StrInsert(S,index,V);
+	
+		pos = index + v_len;
+	}
 
-// }
+}
 
 void StrInsert(SString S,int pos,SString T)//后移长度应该是==插入串的长度
 {
